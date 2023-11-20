@@ -3,17 +3,13 @@ PI PICO Demonstration of interface to an si5351
 
 # Make sure that the PICO_SDK_PATH is set properly
 
-cd /home/bruce/pico/hello-pico
+cd /home/bruce/pico/hello-pico-si5351
 # You need main.c and CMakeLists.txt
 cp ../pico-sdk/external/pico_sdk_import.cmake .
 mkdir build
 cd build
 cmake ..
 make
-
-# Connect the PI PICO to USB while pressing the BOOTSEL button.
-# And then:
-cp main.uf2 /media/bruce/RPI-RP2
 
 # Make sure the SWD is connected properly:
 # GPIO24 (Pin 18) to SWDIO
@@ -29,7 +25,6 @@ minicom -b 115200 -o -D /dev/ttyACM0
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
-#include "pico/binary_info.h"
 #include "hardware/i2c.h"
 
 #include "si5351.h"
@@ -54,11 +49,11 @@ int main(int, const char**) {
     gpio_pull_up(I2C1_SDA_PIN);
 
     // Startup ID
-    for (uint i = 0; i < 4; i++) {
+    for (uint i = 0; i < 2; i++) {
         gpio_put(LED_PIN, 1);
-        sleep_ms(250);
+        sleep_ms(500);
         gpio_put(LED_PIN, 0);
-        sleep_ms(250);
+        sleep_ms(500);
     }    
 
     puts("SI5351 Demo");
