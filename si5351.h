@@ -1,5 +1,3 @@
-#ifndef _SI5351_H
-#define _SI5351_H
 /*
  * si5351.h
  *
@@ -20,6 +18,10 @@
  * See si5351.c for more information 
  *
  */ 
+#ifndef _SI5351_H
+#define _SI5351_H
+
+#include "hardware/i2c.h"
 
 // Phase definitions for si_setphase()
 #define PH000	0

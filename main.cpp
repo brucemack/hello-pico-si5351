@@ -29,10 +29,9 @@ minicom -b 115200 -o -D /dev/ttyACM0
 
 #include "si5351.h"
 
-#define I2C1_SDA_PIN 6  // Pin 9  - data
-#define I2C1_SCL_PIN 7  // Pin 10 - clock
-
-const uint LED_PIN = 25;
+#define I2C0_SDA_PIN (4)  // Pin 6  - data
+#define I2C0_SCL_PIN (5)  // Pin 7 - clock
+#define LED_PIN (25)
 
 int main(int, const char**) {
  
@@ -41,12 +40,12 @@ int main(int, const char**) {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
-    // This example will use I2C1!
-    i2c_init(i2c1, 100 * 1000);
-    gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C1_SDA_PIN);
-    gpio_pull_up(I2C1_SDA_PIN);
+    // This example will use I2C0!
+    i2c_init(i2c0, 100 * 1000);
+    gpio_set_function(I2C0_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(I2C0_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C0_SDA_PIN);
+    gpio_pull_up(I2C0_SDA_PIN);
 
     // Startup ID
     for (uint i = 0; i < 2; i++) {
@@ -59,16 +58,33 @@ int main(int, const char**) {
     puts("SI5351 Demo");
 
     // NOTE NOTE NOTE NOTE
-    // We are using IC21 here!
-    si_init(i2c1);
+    // We are using I2C0 here!
+    si_init(i2c0);
     // NOTE NOTE NOTE NOTE
-
     si_enable(0, true);
 
-    puts("Done initializing");
+    int32_t freq = 7255000;
+    int32_t cal = 490;
+
+    // Change freq
+    si_evaluate(0, freq + cal);
 
     // Prevent the main fom exiting
-    while (1) { }
+    while (1) { 
+        int c = getchar_timeout_us(0);
+        if (c > 0) {
+            if (c == '-') {
+                freq -= 1000;
+            } else if (c == '=') {
+                freq += 1000;
+            }
+            si_evaluate(0, freq + cal);
+            char temp[64];
+            sprintf(temp,"%d\n", freq);
+            puts(temp);
+        }
+
+    }
 
     return 0;
 }
